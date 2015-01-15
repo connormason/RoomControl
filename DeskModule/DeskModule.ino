@@ -6,25 +6,25 @@ Arduino Outputs:
   Analog:
     0  --> Spectrum Analyzer left channel signal
     1  --> Spectrum Analyzer right channel signal
-    2  --> Unused
-    3  --> Unused
-    4  --> Unused
-    5  --> Unused
+    2  --> Comm from DeskModuleRF 1
+    3  --> Comm from DeskModuleRF 2
+    4  --> I2C SDA (for LCD)
+    5  --> I2C SCL (for LCD)
   Digital:
-    0  --> unused
-    1  --> Power relay
-    2  --> TLC5940 SCLK
+    0  --> unused (USB RX)
+    1  --> unused (USB TX)
+    2  --> Comm from DeskModuleRF 4
     3  --> TLC5940 GSCLK
     4  --> Spectrum Analyzer strobe
     5  --> Spectrum Analyzer reset
-    6  --> RF CE PIN
+    6  --> Comm from DeskModuleRF 8
     7  --> TLC5940 SIN
-    8  --> RF CSN Pin
+    8  --> Comm from DeskModuleRF 16
     9  --> TLC5940 XLAT
     10 --> TLC5940 BLANK
-    11 --> RF MOSI
-    12 --> RF MISO
-    13 --> RF SCK
+    11 --> TLC5940 SIN
+    12 --> Comm from DeskModuleRF 32
+    13 --> TLC5940 SCLK
 
 Lighting Modes:
    0 --> party mode initialization
@@ -37,22 +37,18 @@ Lighting Modes:
 */
 
 #include <Wire.h>
-#include <SPI.h>
-#include "nRF24L01.h"
-#include "RF24.h"
 #include "rgb_lcd.h"
 #include "Tlc5940.h"
 
-#define CE_PIN    6
-#define CSN_PIN   8
-#define RELAY_PIN 2
+#define COMM_ONE 16
+#define COMM_TWO 17
+#define COMM_THREE 6
+#define COMM_FOUR 8
+#define COMM_FIVE 11
+#define COMM_SIX 12
 
-// initialization and pipe for RF module
-RF24 radio(CE_PIN, CSN_PIN);
-const uint64_t pipe = 0xE8E8F0F0E1LL;
 
 // variable for mode sent from control panel
-int data[2];
 int activeMode = 4;
 
 // create custom characters for LCD
@@ -275,27 +271,24 @@ void setup() {
   }
   
   // LEDGrid multiplexer chip, RF initialization, and relay pinMode
-//  Tlc.init();
-  radio.begin();
-  radio.openReadingPipe(1,pipe);
-  radio.startListening();
-  pinMode(RELAY_PIN, OUTPUT);
+  Tlc.init();
+  Serial.begin(9600);
   
   // setup LCD and custom characters
-  //  lcd.begin(16, 2);
-  //  lcd.clear();
-  //  lcd.createChar(0,level0);
-  //  lcd.createChar(1,level1);
-  //  lcd.createChar(2,level2);
-  //  lcd.createChar(3,level3);
-  //  lcd.createChar(4,level4);
-  //  lcd.createChar(5,level5);
-  //  lcd.createChar(6,level6);
-  //  lcd.createChar(7,level7);
-  //  lcd.setCursor(0,1);
-  //  lcd.print("Left");
-  //  lcd.setCursor(11,1);
-  //  lcd.print("Right");
+//  lcd.begin(16, 2);
+//  lcd.clear();
+//  lcd.createChar(0,level0);
+//  lcd.createChar(1,level1);
+//  lcd.createChar(2,level2);
+//  lcd.createChar(3,level3);
+//  lcd.createChar(4,level4);
+//  lcd.createChar(5,level5);
+//  lcd.createChar(6,level6);
+//  lcd.createChar(7,level7);
+//  lcd.setCursor(0,1);
+//  lcd.print("Left");
+//  lcd.setCursor(11,1);
+//  lcd.print("Right");
 }
 
 void loop() {
@@ -331,25 +324,41 @@ void loop() {
 //    if (right[band]>=0) { lcd.write((uint8_t)0); }
 //  }
 
-//  Serial.print(activeMode);
-//  Serial.print("  ");
-//  Serial.print(data[0]);
-//  Serial.println();
-//  
-  while (radio.available()) {
-    radio.read(data, sizeof(data));
-    if (data[0] != activeMode) {
-      activeMode = data[0];
-      delay(100);
+  activeMode = digitalRead(COMM_ONE) + (2 * digitalRead(COMM_TWO)) + (4 * digitalRead(COMM_THREE)) + (8 * digitalRead(COMM_FOUR)) + (16 *digitalRead(COMM_FIVE)) + (32 * digitalRead(COMM_SIX));
+  Serial.println(activeMode);
+  
+  Tlc.clear();
+  for (int offset = 0; offset < 3; offset++) {
+    for (int i = 0; i < 24; i+=3) {
+      Tlc.set(i + offset, 3500);
     }
-    
-    if (activeMode == 6) {
-      digitalWrite(RELAY_PIN, HIGH);
-      delay(100);
-      digitalWrite(RELAY_PIN, LOW); 
-      delay(100);
-    }
+    Tlc.update();
   }
+  
+//  lcd.setCursor(0,1);
+//  switch(activeMode) {
+//    case 0:
+//      lcd.print("Party mode");
+//      break;
+//    case 1:
+//      lcd.print("Party mode");
+//      break;
+//    case 2:
+//      lcd.print("Normal lighting");
+//      break;
+//    case 3:
+//      lcd.print("Chill mode");
+//      break;
+//    case 4:
+//      lcd.print("Lights off");
+//      break;
+//    case 5: 
+//      lcd.print("Night mode");
+//      break;
+//    case 6:
+//      lcd.print("Everything off");
+//      break;
+//  }
   
   delay(1);
 }
