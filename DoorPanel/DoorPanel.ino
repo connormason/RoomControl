@@ -1,4 +1,20 @@
 // Code for the room control panel mounted near the door (light switch)
+
+/*
+  Relay attachments:
+    Module 1:
+      1: LEDGrid Power Supply
+      2: Monitor 1
+      3: Monitor 2
+      4: Rope light
+    Module 2:
+      1: Desk lamp
+      2: Party light 1
+      3: Party light 2
+      4: Speakers
+    
+*/
+
 #include <SPI.h>
 #include "nRF24L01.h"
 #include "RF24.h"
@@ -207,7 +223,7 @@ int8_t readRotaryEncoder() {
 }
 
 void setMode() {
-  sendToDesk();
+  sendRF();
   switch(activeMode) {
     case 0:
       setRelays(partyModeInit);
@@ -248,7 +264,7 @@ void setRelays(uint8_t input[]) {
   digitalWrite(RELAY_EIGHT, input[7]);
 }
 
-void sendToDesk() {
+void sendRF() {
   data[0] = activeMode;
   radio.write(data, sizeof(data));
 }
