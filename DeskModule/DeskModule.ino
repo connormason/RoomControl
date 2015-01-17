@@ -37,14 +37,13 @@ Lighting Modes:
 */
 
 #include <Wire.h>
-#include "rgb_lcd.h"
 #include "Tlc5940.h"
 
 #define COMM_ONE 16
 #define COMM_TWO 17
-#define COMM_THREE 6
-#define COMM_FOUR 8
-#define COMM_FIVE 11
+#define COMM_THREE 2
+#define COMM_FOUR 6
+#define COMM_FIVE 8
 #define COMM_SIX 12
 
 
@@ -103,7 +102,14 @@ int tmpAvgL           = 0;
 int tmpAvgR           = 0;
 int band;                                        // counting variable for going through channels
 byte cnt              = 1;
-//rgb_lcd lcd;
+
+bool roomEntered = false;
+
+// variables for music active mode
+int counter = 0;
+int red = 255;
+int blue = 0;
+int green = 0;
 
 inline void reduce(int &anInt, int aAmount, int aLimit, int aMin = 0) {
   int r = ((aAmount > aLimit) ? (anInt-aLimit) : (anInt-aAmount));
@@ -256,6 +262,118 @@ inline void limitRight(int aLimit) {
     prvR[band] = ((newS < oldS) ? (reduceByte(oldS, diff, aLimit, 0)) : (increaseByte(oldS, diff, aLimit, 255)));
   }
 }
+
+void halogen() {
+  Tlc.clear();
+  int redVal = 4095;
+  int greenVal = 2400;
+  int blueVal = 2400;
+  int time = 125;
+  
+  if (roomEntered == false) {
+    Tlc.set(0, redVal);
+    Tlc.set(1, greenVal);
+    Tlc.set(2, blueVal);
+    Tlc.update();
+    delay(time);
+    
+    Tlc.set(3, redVal);
+    Tlc.set(4, greenVal);
+    Tlc.set(5, blueVal);
+    Tlc.update();
+    delay(time);
+    
+    Tlc.set(6, redVal);
+    Tlc.set(7, greenVal);
+    Tlc.set(8, blueVal);
+    Tlc.update();
+    delay(time);
+    
+    Tlc.set(9, redVal);
+    Tlc.set(10, greenVal);
+    Tlc.set(11, blueVal);
+    Tlc.update();
+    delay(time);
+    
+    Tlc.set(12, redVal);
+    Tlc.set(13, greenVal);
+    Tlc.set(14, blueVal);
+    Tlc.update();
+    delay(time);
+    
+    Tlc.set(18, redVal);
+    Tlc.set(19, greenVal);
+    Tlc.set(20, blueVal);
+    Tlc.update();
+    delay(time);
+    
+    Tlc.set(15, redVal);
+    Tlc.set(16, greenVal);
+    Tlc.set(17, blueVal);
+    Tlc.set(21, redVal);
+    Tlc.set(22, greenVal);
+    Tlc.set(23, blueVal);
+    Tlc.update();
+    delay(time);
+    roomEntered = true;
+  } else {
+    Tlc.set(0, redVal);
+    Tlc.set(1, greenVal);
+    Tlc.set(2, blueVal);
+    Tlc.set(3, redVal);
+    Tlc.set(4, greenVal);
+    Tlc.set(5, blueVal);
+    Tlc.set(6, redVal);
+    Tlc.set(7, greenVal);
+    Tlc.set(8, blueVal);
+    Tlc.set(9, redVal);
+    Tlc.set(10, greenVal);
+    Tlc.set(11, blueVal);
+    Tlc.set(12, redVal);
+    Tlc.set(13, greenVal);
+    Tlc.set(14, blueVal);
+    Tlc.set(15, redVal);
+    Tlc.set(16, greenVal);
+    Tlc.set(17, blueVal);
+    Tlc.set(18, redVal);
+    Tlc.set(19, greenVal);
+    Tlc.set(20, blueVal);
+    Tlc.set(21, redVal);
+    Tlc.set(22, greenVal);
+    Tlc.set(23, blueVal);
+    Tlc.update();
+  }
+}
+
+void chillMode() {
+  Tlc.clear();
+  Tlc.set(0, 1000);
+  Tlc.set(2, 2000);
+  Tlc.set(5, 2200);
+  Tlc.set(6, 2000);
+  Tlc.set(8, 1000);
+  Tlc.set(11, 2200);
+  Tlc.set(12, 1000);
+  Tlc.set(14, 2000);
+  Tlc.set(17, 2200);
+  Tlc.set(18, 2000);
+  Tlc.set(20, 1000);
+  Tlc.set(23, 2200);
+  Tlc.update();
+}
+
+void nightMode() {
+  Tlc.clear();
+  Tlc.set(0, 500);
+  Tlc.set(3, 500);
+  Tlc.set(6, 1000);
+  Tlc.set(9, 500);
+  Tlc.set(12, 500);
+  Tlc.set(15, 500);
+  Tlc.set(18, 1000);
+  Tlc.set(21, 500);
+  Tlc.update();
+}
     
 void setup() {
   pinMode(res, OUTPUT);       // reset
@@ -270,26 +388,11 @@ void setup() {
     _zeroBSLL[band] = averageL[band];
   }
   
-  // LEDGrid multiplexer chip, RF initialization, and relay pinMode
   Tlc.init();
   Serial.begin(9600);
-  
-  // setup LCD and custom characters
-//  lcd.begin(16, 2);
-//  lcd.clear();
-//  lcd.createChar(0,level0);
-//  lcd.createChar(1,level1);
-//  lcd.createChar(2,level2);
-//  lcd.createChar(3,level3);
-//  lcd.createChar(4,level4);
-//  lcd.createChar(5,level5);
-//  lcd.createChar(6,level6);
-//  lcd.createChar(7,level7);
-//  lcd.setCursor(0,1);
-//  lcd.print("Left");
-//  lcd.setCursor(11,1);
-//  lcd.print("Right");
 }
+
+
 
 void loop() {
   shapeMSGEQ7(smoothP);
@@ -300,65 +403,135 @@ void loop() {
   }
   cnt++;
   
-//  for(band = 0; band < 7; band++) {
-//    lcd.setCursor(band,0);
-//    if (left[band]>=895) { lcd.write((uint8_t)7); } else
-//    if (left[band]>=767) { lcd.write((uint8_t)6); } else
-//    if (left[band]>=639) { lcd.write((uint8_t)5); } else
-//    if (left[band]>=511) { lcd.write((uint8_t)4); } else
-//    if (left[band]>=383) { lcd.write((uint8_t)3); } else
-//    if (left[band]>=255) { lcd.write((uint8_t)2); } else
-//    if (left[band]>=127) { lcd.write((uint8_t)1); } else
-//    if (left[band]>=0) { lcd.write((uint8_t)0); }
-//  }
-//  // display values of right channel on LCD
-//  for(band = 0; band < 7; band++) {
-//    lcd.setCursor(band+9,0);
-//    if (right[band]>=895) { lcd.write((uint8_t)7); } else
-//    if (right[band]>=767) { lcd.write((uint8_t)6); } else
-//    if (right[band]>=639) { lcd.write((uint8_t)5); } else
-//    if (right[band]>=511) { lcd.write((uint8_t)4); } else
-//    if (right[band]>=383) { lcd.write((uint8_t)3); } else
-//    if (right[band]>=255) { lcd.write((uint8_t)2); } else
-//    if (right[band]>=127) { lcd.write((uint8_t)1); } else
-//    if (right[band]>=0) { lcd.write((uint8_t)0); }
-//  }
-
+  // determine activeMode from DeskModuleRF
   activeMode = digitalRead(COMM_ONE) + (2 * digitalRead(COMM_TWO)) + (4 * digitalRead(COMM_THREE)) + (8 * digitalRead(COMM_FOUR)) + (16 *digitalRead(COMM_FIVE)) + (32 * digitalRead(COMM_SIX));
   Serial.println(activeMode);
   
-  Tlc.clear();
-  for (int offset = 0; offset < 3; offset++) {
-    for (int i = 0; i < 24; i+=3) {
-      Tlc.set(i + offset, 3500);
+  // RGB fading for horizonal spectrum bars
+  if (counter < 256) {
+    green = counter;
+    red = 255 - counter;
+  } else if (counter < 512) {
+    blue = counter - 256; 
+    green = 511 - counter;
+  } else if (counter < 768) {
+    red = counter - 512;
+    blue = 767 - counter;
+  } else {
+    counter = 0;
+  }
+  counter++;
+
+  if ((activeMode == 0) || (activeMode == 1)) {
+    Tlc.clear();
+    
+//    Tlc.set(6, red * 16);
+//    Tlc.set(7, green * 16);
+//    Tlc.set(8, blue * 16);
+//    Tlc.set(3, red * 16);
+//    Tlc.set(4, green * 16);
+//    Tlc.set(5, blue * 16);
+//    Tlc.set(9, red * 16);
+//    Tlc.set(10, green * 16);
+//    Tlc.set(11, blue * 16);
+//    Tlc.set(0, red * 16);
+//    Tlc.set(1, green * 16);
+//    Tlc.set(2, blue * 16);
+//    Tlc.set(12, red * 16);
+//    Tlc.set(13, green * 16);
+//    Tlc.set(14, blue * 16);
+    
+    int cutoff = 25;
+    if ((left[1] > cutoff) && (left[2] > cutoff) && (left[3] > cutoff) && (left[4] > cutoff) && (left[5] > cutoff) && (left[6] > cutoff)) {
+      if (left[0] > 250) {
+        Tlc.set(6, red * 16);
+        Tlc.set(7, green * 16);
+        Tlc.set(8, blue * 16);
+      }
+      if (left[0] > 600) {
+        Tlc.set(3, red * 16);
+        Tlc.set(4, green * 16);
+        Tlc.set(5, blue * 16);
+        Tlc.set(9, red * 16);
+        Tlc.set(10, green * 16);
+        Tlc.set(11, blue * 16);
+      }
+      if (left[0] > 850) {
+        Tlc.set(0, red * 16);
+        Tlc.set(1, green * 16);
+        Tlc.set(2, blue * 16);
+        Tlc.set(12, red * 16);
+        Tlc.set(13, green * 16);
+        Tlc.set(14, blue * 16);
+      }
+      
+//      Tlc.set(6, red * 16);
+//      Tlc.set(7, green * 16);
+//      Tlc.set(8, blue * 16);
+//      Tlc.set(3, red * 16);
+//      Tlc.set(4, green * 16);
+//      Tlc.set(5, blue * 16);
+//      Tlc.set(9, red * 16);
+//      Tlc.set(10, green * 16);
+//      Tlc.set(11, blue * 16);
+//      Tlc.set(0, red * 16);
+//      Tlc.set(1, green * 16);
+//      Tlc.set(2, blue * 16);
+//      Tlc.set(12, red * 16);
+//      Tlc.set(13, green * 16);
+//      Tlc.set(14, blue * 16);
+      
+      if (left[0] > 800) {
+        Tlc.set(15, left[0] * 4);
+        Tlc.set(16, left[0] * 4);
+        Tlc.set(17, left[0] * 4);
+        Tlc.set(18, left[0] * 4);
+        Tlc.set(19, left[0] * 4);
+        Tlc.set(20, left[0] * 4);
+        Tlc.set(21, left[0] * 4);
+        Tlc.set(22, left[0] * 4);
+        Tlc.set(23, left[0] * 4);
+      } else if (left[0] >= 600) {
+        Tlc.set(15, left[0]);
+        Tlc.set(16, left[0]);
+        Tlc.set(17, left[0]);
+        Tlc.set(18, left[0]);
+        Tlc.set(19, left[0]);
+        Tlc.set(20, left[0]);
+        Tlc.set(21, left[0]);
+        Tlc.set(22, left[0]);
+        Tlc.set(23, left[0]);
+      } else {
+        Tlc.set(15, 250);
+        Tlc.set(16, 250);
+        Tlc.set(17, 250);
+        Tlc.set(18, 250);
+        Tlc.set(19, 250);
+        Tlc.set(20, 250);
+        Tlc.set(21, 250);
+        Tlc.set(22, 250);
+        Tlc.set(23, 250);
+      }
+      Tlc.update();
+    } else {
+      Tlc.clear();
+      Tlc.update();
     }
+  } else if (activeMode == 2) {
+    halogen();
+  } else if (activeMode == 3) {
+    chillMode();
+  } else if (activeMode == 4) {
+    roomEntered = false;
+    Tlc.clear();
+    Tlc.update();
+  } else if (activeMode == 5) {
+    nightMode();
+  } else if (activeMode == 6) {
+    roomEntered = false;
+    Tlc.clear();
     Tlc.update();
   }
   
-//  lcd.setCursor(0,1);
-//  switch(activeMode) {
-//    case 0:
-//      lcd.print("Party mode");
-//      break;
-//    case 1:
-//      lcd.print("Party mode");
-//      break;
-//    case 2:
-//      lcd.print("Normal lighting");
-//      break;
-//    case 3:
-//      lcd.print("Chill mode");
-//      break;
-//    case 4:
-//      lcd.print("Lights off");
-//      break;
-//    case 5: 
-//      lcd.print("Night mode");
-//      break;
-//    case 6:
-//      lcd.print("Everything off");
-//      break;
-//  }
-  
-  delay(1);
+  delay(25);
 }
