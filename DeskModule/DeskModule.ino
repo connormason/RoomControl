@@ -106,10 +106,18 @@ byte cnt              = 1;
 bool roomEntered = false;
 
 // variables for music active mode
-int counter = 0;
-int red = 255;
-int blue = 0;
-int green = 0;
+int counter1 = 0;
+int counter2 = 25;
+int counter3 = 50;
+int red1 = 255;
+int red2 = 230;
+int red3 = 205;
+int green1 = 0;
+int green2 = 25;
+int green3 = 50;
+int blue1 = 0;
+int blue2 = 0;
+int blue3 = 255;
 
 inline void reduce(int &anInt, int aAmount, int aLimit, int aMin = 0) {
   int r = ((aAmount > aLimit) ? (anInt-aLimit) : (anInt-aAmount));
@@ -408,78 +416,71 @@ void loop() {
   Serial.println(activeMode);
   
   // RGB fading for horizonal spectrum bars
-  if (counter < 256) {
-    green = counter;
-    red = 255 - counter;
-  } else if (counter < 512) {
-    blue = counter - 256; 
-    green = 511 - counter;
-  } else if (counter < 768) {
-    red = counter - 512;
-    blue = 767 - counter;
+  if (counter1 < 256) {
+    green1 = counter1;
+    red1 = 255 - counter1;
+  } else if (counter1 < 512) {
+    blue1 = counter1 - 256; 
+    green1 = 511 - counter1;
+  } else if (counter1 < 768) {
+    red1 = counter1 - 512;
+    blue1 = 767 - counter1;
   } else {
-    counter = 0;
+    counter1 = 0;
   }
-  counter++;
+  counter1++;
+  if (counter2 < 256) {
+    green2 = counter2;
+    red2 = 255 - counter2;
+  } else if (counter2 < 512) {
+    blue2 = counter2 - 256; 
+    green2 = 511 - counter2;
+  } else if (counter2 < 768) {
+    red2 = counter2 - 512;
+    blue2 = 767 - counter2;
+  } else {
+    counter2 = 0;
+  }
+  counter2++;
+  if (counter3 < 256) {
+    green3 = counter3;
+    red3 = 255 - counter3;
+  } else if (counter3 < 512) {
+    blue3 = counter3 - 256; 
+    green3 = 511 - counter3;
+  } else if (counter3 < 768) {
+    red3 = counter3 - 512;
+    blue3 = 767 - counter3;
+  } else {
+    counter3 = 0;
+  }
+  counter3++;
 
-  if ((activeMode == 0) || (activeMode == 1)) {
+  if (activeMode == 0) {
     Tlc.clear();
-    
-//    Tlc.set(6, red * 16);
-//    Tlc.set(7, green * 16);
-//    Tlc.set(8, blue * 16);
-//    Tlc.set(3, red * 16);
-//    Tlc.set(4, green * 16);
-//    Tlc.set(5, blue * 16);
-//    Tlc.set(9, red * 16);
-//    Tlc.set(10, green * 16);
-//    Tlc.set(11, blue * 16);
-//    Tlc.set(0, red * 16);
-//    Tlc.set(1, green * 16);
-//    Tlc.set(2, blue * 16);
-//    Tlc.set(12, red * 16);
-//    Tlc.set(13, green * 16);
-//    Tlc.set(14, blue * 16);
-    
     int cutoff = 25;
     if ((left[1] > cutoff) && (left[2] > cutoff) && (left[3] > cutoff) && (left[4] > cutoff) && (left[5] > cutoff) && (left[6] > cutoff)) {
       if (left[0] > 250) {
-        Tlc.set(6, red * 16);
-        Tlc.set(7, green * 16);
-        Tlc.set(8, blue * 16);
+        Tlc.set(6, red1 * 16);
+        Tlc.set(7, green1 * 16);
+        Tlc.set(8, blue1 * 16);
       }
       if (left[0] > 600) {
-        Tlc.set(3, red * 16);
-        Tlc.set(4, green * 16);
-        Tlc.set(5, blue * 16);
-        Tlc.set(9, red * 16);
-        Tlc.set(10, green * 16);
-        Tlc.set(11, blue * 16);
+        Tlc.set(3, red2 * 16);
+        Tlc.set(4, green2 * 16);
+        Tlc.set(5, blue2 * 16);
+        Tlc.set(9, red2 * 16);
+        Tlc.set(10, green2 * 16);
+        Tlc.set(11, blue2 * 16);
       }
       if (left[0] > 850) {
-        Tlc.set(0, red * 16);
-        Tlc.set(1, green * 16);
-        Tlc.set(2, blue * 16);
-        Tlc.set(12, red * 16);
-        Tlc.set(13, green * 16);
-        Tlc.set(14, blue * 16);
+        Tlc.set(0, red3 * 16);
+        Tlc.set(1, green3 * 16);
+        Tlc.set(2, blue3 * 16);
+        Tlc.set(12, red3 * 16);
+        Tlc.set(13, green3 * 16);
+        Tlc.set(14, blue3 * 16);
       }
-      
-//      Tlc.set(6, red * 16);
-//      Tlc.set(7, green * 16);
-//      Tlc.set(8, blue * 16);
-//      Tlc.set(3, red * 16);
-//      Tlc.set(4, green * 16);
-//      Tlc.set(5, blue * 16);
-//      Tlc.set(9, red * 16);
-//      Tlc.set(10, green * 16);
-//      Tlc.set(11, blue * 16);
-//      Tlc.set(0, red * 16);
-//      Tlc.set(1, green * 16);
-//      Tlc.set(2, blue * 16);
-//      Tlc.set(12, red * 16);
-//      Tlc.set(13, green * 16);
-//      Tlc.set(14, blue * 16);
       
       if (left[0] > 800) {
         Tlc.set(15, left[0] * 4);
@@ -517,6 +518,46 @@ void loop() {
       Tlc.clear();
       Tlc.update();
     }
+  } else if (activeMode == 1) {
+    Tlc.clear();
+    Tlc.set(6, red1 * 16);
+    Tlc.set(7, green1 * 16);
+    Tlc.set(8, blue1 * 16);
+    Tlc.set(3, red2 * 16);
+    Tlc.set(4, green2 * 16);
+    Tlc.set(5, blue2 * 16);
+    Tlc.set(9, red2 * 16);
+    Tlc.set(10, green2 * 16);
+    Tlc.set(11, blue2 * 16);
+    Tlc.set(0, red3 * 16);
+    Tlc.set(1, green3 * 16);
+    Tlc.set(2, blue3 * 16);
+    Tlc.set(12, red3 * 16);
+    Tlc.set(13, green3 * 16);
+    Tlc.set(14, blue3 * 16);
+    
+    if (left[0] > 800) {
+      Tlc.set(15, left[0] * 2);
+      Tlc.set(16, left[0] * 2);
+      Tlc.set(17, left[0] * 2);
+      Tlc.set(18, left[0] * 2);
+      Tlc.set(19, left[0] * 2);
+      Tlc.set(20, left[0] * 2);
+      Tlc.set(21, left[0] * 2);
+      Tlc.set(22, left[0] * 2);
+      Tlc.set(23, left[0] * 2);
+    } else {
+      Tlc.set(15, 250);
+      Tlc.set(16, 250);
+      Tlc.set(17, 250);
+      Tlc.set(18, 250);
+      Tlc.set(19, 250);
+      Tlc.set(20, 250);
+      Tlc.set(21, 250);
+      Tlc.set(22, 250);
+      Tlc.set(23, 250);
+    }
+    Tlc.update();
   } else if (activeMode == 2) {
     halogen();
   } else if (activeMode == 3) {
