@@ -34,6 +34,7 @@ Lighting Modes:
    4 --> lights off
    5 --> night mode
    6 --> everything off
+   7 --> study mode
 */
 
 #include <Wire.h>
@@ -382,6 +383,35 @@ void nightMode() {
   Tlc.set(21, 500);
   Tlc.update();
 }
+
+void studyMode() {
+  Tlc.clear();
+  Tlc.set(0, 4095);
+  Tlc.set(1, 4095);
+  Tlc.set(2, 4095);
+  Tlc.set(3, 4095);
+  Tlc.set(4, 4095);
+  Tlc.set(5, 4095);
+  Tlc.set(6, 0);
+  Tlc.set(7, 0);
+  Tlc.set(8, 4095);
+  Tlc.set(9, 4095);
+  Tlc.set(10, 4095);
+  Tlc.set(11, 4095);
+  Tlc.set(12, 4095);
+  Tlc.set(13, 4095);
+  Tlc.set(14, 4095);
+  Tlc.set(15, 4095);
+  Tlc.set(16, 4095);
+  Tlc.set(17, 4095);
+  Tlc.set(18, 0);
+  Tlc.set(19, 0);
+  Tlc.set(20, 4095);
+  Tlc.set(21, 4095);
+  Tlc.set(22, 4095);
+  Tlc.set(23, 4095);
+  Tlc.update();
+}
     
 void setup() {
   pinMode(res, OUTPUT);       // reset
@@ -572,6 +602,8 @@ void loop() {
     roomEntered = false;
     Tlc.clear();
     Tlc.update();
+  } else if (activeMode == 7) {
+    studyMode(); 
   }
   
   delay(25);

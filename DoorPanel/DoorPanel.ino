@@ -52,7 +52,8 @@ void setLCD();
 // state declarations
 int rageMode[2]        = {14, 7};
 int partyMode[2]       = {14, 7};
-int normalLighting[2]  = {15, 9};
+int normalLighting[2]  = {15, 1};
+int studyMode[2]       = {15, 9};
 int chillMode[2]       = {15, 1};
 int lightsOff[2]       = {6, 1};
 int nightMode[2]       = {14, 1};
@@ -223,6 +224,9 @@ void setMode() {
     sendRF(1, everythingOff[0]);
     sendRF(2, everythingOff[1]);
     break;
+  case 7:
+    sendRF(1, studyMode[0]);
+    sendRF(2, studyMode[1]);
   }
 }
 
@@ -333,11 +337,18 @@ void setLCD() {
     if (activeMode == 5) {
       lcd.print("  ACTIVE");
     }
-  } else {
+  } else if (curMode == 6) {
     setLCDBacklight(0xFF, 0x0, 0x0);
     clearLCD();
     lcd.print("Everything off  ");
     if (activeMode == 6) {
+      lcd.print("  ACTIVE");
+    }
+  } else if (curMode == 7) {
+    setLCDBacklight(0x80, 0xFF, 0xFF);
+    clearLCD();
+    lcd.print("Study mode      ");
+    if (activeMode == 7) {
       lcd.print("  ACTIVE");
     }
   }
