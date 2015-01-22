@@ -119,7 +119,7 @@ void loop() {
   }
 
   // update screen selection
-  if ((rotaryVal > 0) && (curMode < 6)) {
+  if ((rotaryVal > 0) && (curMode < 7)) {
     curMode++;
     setLCD();
   }
@@ -209,24 +209,24 @@ void setMode() {
     sendRF(2, normalLighting[1]);
     break;
   case 3:
+    sendRF(1, studyMode[0]);
+    sendRF(2, studyMode[1]);
+  case 4:
     sendRF(1, chillMode[0]);
     sendRF(2, chillMode[1]);
     break;
-  case 4:
+  case 5:
     sendRF(1, lightsOff[0]);
     sendRF(2, lightsOff[1]);
     break;
-  case 5:
+  case 6:
     sendRF(1, nightMode[0]);
     sendRF(2, nightMode[1]);
     break;
-  case 6:
+  case 7:
     sendRF(1, everythingOff[0]);
     sendRF(2, everythingOff[1]);
     break;
-  case 7:
-    sendRF(1, studyMode[0]);
-    sendRF(2, studyMode[1]);
   }
 }
 
@@ -317,37 +317,37 @@ void setLCD() {
       lcd.print("  ACTIVE");
     }
   } else if (curMode == 3) {
-    setLCDBacklight(0x0, 0x0, 0xFF);
+    setLCDBacklight(0x80, 0xFF, 0xFF);
     clearLCD();
-    lcd.print("Chill lighting  ");
+    lcd.print("Study mode      ");
     if (activeMode == 3) {
       lcd.print("  ACTIVE");
     }
   } else if (curMode == 4) {
-    setLCDBacklight(0x0, 0xFF, 0x0);
+    setLCDBacklight(0x0, 0x0, 0xFF);
     clearLCD();
-    lcd.print("Lights off      ");
+    lcd.print("Chill lighting  ");
     if (activeMode == 4) {
       lcd.print("  ACTIVE");
     }
   } else if (curMode == 5) {
-    setLCDBacklight(0xFF, 0x0, 0x0);
+    setLCDBacklight(0x0, 0xFF, 0x0);
     clearLCD();
-    lcd.print("Night mode      ");
+    lcd.print("Lights off      ");
     if (activeMode == 5) {
       lcd.print("  ACTIVE");
     }
   } else if (curMode == 6) {
     setLCDBacklight(0xFF, 0x0, 0x0);
     clearLCD();
-    lcd.print("Everything off  ");
+    lcd.print("Night mode      ");
     if (activeMode == 6) {
       lcd.print("  ACTIVE");
     }
   } else if (curMode == 7) {
-    setLCDBacklight(0x80, 0xFF, 0xFF);
+    setLCDBacklight(0xFF, 0x0, 0x0);
     clearLCD();
-    lcd.print("Study mode      ");
+    lcd.print("Everything off  ");
     if (activeMode == 7) {
       lcd.print("  ACTIVE");
     }
