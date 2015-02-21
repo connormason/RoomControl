@@ -412,6 +412,23 @@ void studyMode() {
   Tlc.set(23, 4095);
   Tlc.update();
 }
+
+void relaxMode() {
+  Tlc.clear();
+  Tlc.set(0, 500);
+  Tlc.set(2, 1000);
+  Tlc.set(5, 300);
+  Tlc.set(6, 500);
+  Tlc.set(8, 1000);
+  Tlc.set(11, 300);
+  Tlc.set(12, 500);
+  Tlc.set(14, 1000);
+  Tlc.set(17, 300);
+  Tlc.set(18, 500);
+  Tlc.set(20, 1000);
+  Tlc.set(23, 300);
+  Tlc.update();
+}
     
 void setup() {
   pinMode(res, OUTPUT);       // reset
@@ -489,7 +506,7 @@ void loop() {
   if (activeMode == 0) {
     Tlc.clear();
     int cutoff = 25;
-    if ((left[1] > cutoff) && (left[2] > cutoff) && (left[3] > cutoff) && (left[4] > cutoff) && (left[5] > cutoff) && (left[6] > cutoff)) {
+    if ((left[0] > 200) && (left[1] > cutoff) && (left[2] > cutoff) && (left[3] > cutoff) && (left[4] > cutoff) && (left[5] > cutoff) && (left[6] > cutoff)) {
       if (left[0] > 250) {
         Tlc.set(6, red1 * 16);
         Tlc.set(7, green1 * 16);
@@ -591,19 +608,19 @@ void loop() {
   } else if (activeMode == 2) {
     halogen();
   } else if (activeMode == 3) {
-    chillMode();
+    studyMode();
   } else if (activeMode == 4) {
-    roomEntered = false;
-    Tlc.clear();
-    Tlc.update();
+    chillMode();
   } else if (activeMode == 5) {
-    nightMode();
-  } else if (activeMode == 6) {
     roomEntered = false;
     Tlc.clear();
     Tlc.update();
+  } else if (activeMode == 6) {
+    nightMode();
   } else if (activeMode == 7) {
-    studyMode(); 
+    roomEntered = false;
+    Tlc.clear();
+    Tlc.update();
   }
   
   delay(25);

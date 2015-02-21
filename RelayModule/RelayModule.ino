@@ -44,8 +44,8 @@
 #include "nRF24L01.h"
 #include "RF24.h"
 
-#define CE_PIN 10
 #define CSN_PIN 9
+#define CE_PIN 10
 #define RELAY_ONE 18
 #define RELAY_TWO 17
 #define RELAY_THREE 16
@@ -75,7 +75,6 @@ void setup() {
   pinMode(RELAY_FOUR, OUTPUT);
 
   pinMode(8, OUTPUT);
-  Serial.begin(9600);
 
   digitalWrite(8, HIGH);
   delay(100);
@@ -97,11 +96,9 @@ void loop() {
       digitalWrite(8, HIGH);
       delay(100);
       digitalWrite(8, LOW);
-      
-      Serial.println(data[2]);
-      setRelays();
     }
   }
+  setRelays();
 }
 
 

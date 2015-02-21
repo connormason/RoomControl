@@ -10,15 +10,15 @@ Arduino Outputs:
     4  --> Comm to DeskModule 16
     5  --> Comm to DeskModule 32
   Digital:
-    0  --> unused
-    1  --> unused
-    2  --> unused
-    3  --> unused
-    4  --> unused
-    5  --> unused
-    6  --> unused
-    7  --> unused
-    8  --> unused
+    0  --> Relay 1 (LEDGrid power supply)
+    1  --> Relay 2 (Rope light)
+    2  --> Relay 3 (Computer Monitor and speakers)
+    3  --> Relay 4 (Party lights)
+    4  --> Relay 5
+    5  --> Relay 6
+    6  --> Relay 7
+    7  --> Relay 8
+    8  --> Activity LED
     9  --> RF CSN
     10 --> RF CE
     11 --> RF MOSI
@@ -26,13 +26,14 @@ Arduino Outputs:
     13 --> RF SCK
 
 Lighting Modes:
-   0 --> party mode initialization
-   1 --> party mode active
+   0 --> rage mode
+   1 --> party mode
    2 --> normal lighting
-   3 --> chill mode
-   4 --> lights off
-   5 --> night mode
-   6 --> everything off
+   3 --> study mode
+   4 --> chill mode
+   5 --> lights off
+   6 --> night mode
+   7 --> everything off
 */
 
 #include <SPI.h>
@@ -43,6 +44,10 @@ Lighting Modes:
 #define RELAY_TWO 1
 #define RELAY_THREE 2
 #define RELAY_FOUR 3
+#define RELAY_FIVE 4
+#define RELAY_SIX 5
+#define RELAY_SEVEN 6
+#define RELAY_EIGHT 7
 #define CSN_PIN 9
 #define CE_PIN 10
 #define COMM_ONE 14
@@ -51,6 +56,7 @@ Lighting Modes:
 #define COMM_FOUR 17
 #define COMM_FIVE 18
 #define COMM_SIX 19
+#define ACTIVITY_LED 8
 
 const uint64_t pipe = 0xE8E8F0F0E1LL;
 int data[2];
@@ -85,6 +91,59 @@ void setBinaryComm() {
   }
 }
 
+void setRelays() {
+  switch(activeMode) {
+    case 0:
+      digitalWrite(RELAY_ONE, HIGH);
+      digitalWrite(RELAY_TWO, LOW);
+      digitalWrite(RELAY_THREE, HIGH);
+      digitalWrite(RELAY_FOUR, HIGH);
+      break;
+    case 1:
+      digitalWrite(RELAY_ONE, HIGH);
+      digitalWrite(RELAY_TWO, LOW);
+      digitalWrite(RELAY_THREE, HIGH);
+      digitalWrite(RELAY_FOUR, HIGH);
+      break;
+    case 2:
+      digitalWrite(RELAY_ONE, HIGH);
+      digitalWrite(RELAY_TWO, HIGH);
+      digitalWrite(RELAY_THREE, HIGH);
+      digitalWrite(RELAY_FOUR, LOW);
+      break;
+    case 3:
+      digitalWrite(RELAY_ONE, HIGH);
+      digitalWrite(RELAY_TWO, HIGH);
+      digitalWrite(RELAY_THREE, HIGH);
+      digitalWrite(RELAY_FOUR, LOW);
+      break;
+    case 4:
+      digitalWrite(RELAY_ONE, HIGH);
+      digitalWrite(RELAY_TWO, HIGH);
+      digitalWrite(RELAY_THREE, HIGH);
+      digitalWrite(RELAY_FOUR, LOW);
+      break;
+    case 5:
+      digitalWrite(RELAY_ONE, LOW);
+      digitalWrite(RELAY_TWO, LOW);
+      digitalWrite(RELAY_THREE, HIGH);
+      digitalWrite(RELAY_FOUR, LOW);
+      break;
+    case 6: 
+      digitalWrite(RELAY_ONE, HIGH);
+      digitalWrite(RELAY_TWO, LOW);
+      digitalWrite(RELAY_THREE, LOW);
+      digitalWrite(RELAY_FOUR, LOW);
+      break;
+    case 7:
+      digitalWrite(RELAY_ONE, LOW);
+      digitalWrite(RELAY_TWO, LOW);
+      digitalWrite(RELAY_THREE, LOW);
+      digitalWrite(RELAY_FOUR, LOW);
+      break;
+  }
+}
+
 void setup() {
   // set pins for communication to DeskModule Arduino)
   pinMode(COMM_ONE, OUTPUT);
@@ -93,16 +152,24 @@ void setup() {
   pinMode(COMM_FOUR, OUTPUT);
   pinMode(COMM_FIVE, OUTPUT);
   pinMode(COMM_SIX, OUTPUT);
-  pinMode(8, OUTPUT);
+  pinMode(RELAY_ONE, OUTPUT);
+  pinMode(RELAY_TWO, OUTPUT);
+  pinMode(RELAY_THREE, OUTPUT);
+  pinMode(RELAY_FOUR, OUTPUT);
+  pinMode(RELAY_FIVE, OUTPUT);
+  pinMode(RELAY_SIX, OUTPUT);
+  pinMode(RELAY_SEVEN, OUTPUT);
+  pinMode(RELAY_EIGHT, OUTPUT);
+  pinMode(ACTIVITY_LED, OUTPUT);
   
   // start RF SPI
   radio.begin();
   radio.openReadingPipe(1,pipe);
   radio.startListening();
   
-  digitalWrite(8, HIGH);
+  digitalWrite(ACTIVITY_LED, HIGH);
   delay(100);
-  digitalWrite(8, LOW);
+  digitalWrite(ACTIVITY_LED, LOW);
 }
 
 void loop() {
@@ -111,10 +178,11 @@ void loop() {
     radio.read(data, sizeof(data));
     if (data[0] != activeMode) {
       activeMode = data[0];
-      digitalWrite(8, HIGH);
+      digitalWrite(ACTIVITY_LED, HIGH);
       delay(100);
-      digitalWrite(8, LOW);
+      digitalWrite(ACTIVITY_LED, LOW);
     }
   }
   setBinaryComm();
+  setRelays();
 }
