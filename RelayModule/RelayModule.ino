@@ -4,21 +4,21 @@
  Arduino Outputs:
  Analog:
  0  --> unused
- 1  --> Relay 1
- 2  --> Relay 2
- 3  --> Relay 3
- 4  --> Relay 4
+ 1  --> unused
+ 2  --> unused
+ 3  --> unused
+ 4  --> unused
  5  --> unused
  Digital:
  0  --> unused
  1  --> unused
  2  --> unused
  3  --> unused
- 4  --> unused
- 5  --> unused
- 6  --> unused
- 7  --> unused
- 8  --> unused
+ 4  --> Relay 1
+ 5  --> Relay 2
+ 6  --> Relay 3
+ 7  --> Relay 4
+ 8  --> Activity LED (if connected)
  9  --> RF CSN
  10 --> RF CE
  11 --> RF MOSI
@@ -26,30 +26,17 @@
  13 --> RF SCK
  */
 
-/*
-  Relay attachments:
-    Module 1:
-      1: LEDGrid Power Supply
-      2: Monitor 1
-      3: Monitor 2
-      4: Rope light
-    Module 2:
-      1: Desk lamp
-      2: Party light 1
-      3: Party light 2
-      4: Speakers
-*/
-
 #include <SPI.h>
 #include "nRF24L01.h"
 #include "RF24.h"
 
 #define CSN_PIN 9
 #define CE_PIN 10
-#define RELAY_ONE 18
-#define RELAY_TWO 17
-#define RELAY_THREE 16
-#define RELAY_FOUR 15
+#define RELAY_ONE 4
+#define RELAY_TWO 5
+#define RELAY_THREE 6
+#define RELAY_FOUR 7
+#define ACTIVITY_LED 8
 
 #define RELAY_MODULE 2
 
@@ -74,11 +61,11 @@ void setup() {
   pinMode(RELAY_THREE, OUTPUT);
   pinMode(RELAY_FOUR, OUTPUT);
 
-  pinMode(8, OUTPUT);
+  pinMode(ACTIVITY_LED, OUTPUT);
 
-  digitalWrite(8, HIGH);
+  digitalWrite(ACTIVITY_LED, HIGH);
   delay(100);
-  digitalWrite(8, LOW); 
+  digitalWrite(ACTIVITY_LED, LOW); 
   delay(100);
 
   radio.begin();
@@ -93,9 +80,9 @@ void loop() {
     radio.read(data, sizeof(data));
     if (data[1] == RELAY_MODULE) {
       curRelays = data[2];
-      digitalWrite(8, HIGH);
+      digitalWrite(ACTIVITY_LED, HIGH);
       delay(100);
-      digitalWrite(8, LOW);
+      digitalWrite(ACTIVITY_LED, LOW);
     }
   }
   setRelays();
